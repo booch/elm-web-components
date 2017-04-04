@@ -14,21 +14,12 @@
     ShadyCSS.prepareTemplate(tmpl, 'my-element');
 
     class MyElement extends HTMLElement {
-        // v1
         constructor() {
             super();
             this.flags = {};
             this.root = null;
         }
 
-        // v0
-        createdCallback() {
-            alert("WebComponents v0 call to createdCallback");
-            this.root = this.createShadowRoot();
-            this.root.appendChild(document.importNode(tmpl.content, true));
-        }
-
-        // v1
         connectedCallback() {
             ShadyCSS.styleElement(this);
             if (!this.shadowRoot) {
@@ -57,11 +48,6 @@
     };
 
     if ( window.customElements ) {
-        // v1
         customElements.define('my-element', MyElement );
-    } else {
-        // v0
-        alert("WebComponents v0 call of registerElement");
-        document.registerElement('my-element', { prototype: Object.create(MyElement.prototype) });
     }
 </script>
