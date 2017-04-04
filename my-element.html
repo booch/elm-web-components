@@ -1,0 +1,67 @@
+<template id="my-element">
+    <style>
+        section { background: blue; } /* This will apply to any <section> *within* our component. */
+    </style>
+    <main>
+        This entire element will be replaced by Elm.
+    </main>
+</template>
+<script>
+    let tmpl = (document.currentScript ? document.currentScript.ownerDocument : document._currentScript.ownerDocument).querySelector('template#my-element');
+    if ( tmpl === null ) {
+        tmpl = document._currentScript.ownerDocument.querySelector('template#my-element');
+    }
+    ShadyCSS.prepareTemplate(tmpl, 'my-element');
+
+    class MyElement extends HTMLElement {
+        // v1
+        constructor() {
+            super();
+            this.flags = {};
+            this.root = null;
+        }
+
+        // v0
+        createdCallback() {
+            alert("WebComponents v0 call to createdCallback");
+            this.root = this.createShadowRoot();
+            this.root.appendChild(document.importNode(tmpl.content, true));
+        }
+
+        // v1
+        connectedCallback() {
+            ShadyCSS.styleElement(this);
+            if (!this.shadowRoot) {
+                this.root = this.attachShadow({mode: 'open'});
+                this.root.appendChild(document.importNode(tmpl.content, true));
+                let main = this.root.querySelector('main');
+                this.attachElm(main, Elm.MyElement);
+                ShadyCSS.styleElement(this.root);
+                ShadyCSS.styleSubtree(this.root);
+            }
+        }
+
+        // v0/v1 - an attribute on the element has been added/removed/changed.
+        attributeChangedCallback() {
+            alert("WebComponents attributeChangedCallback called");
+            this.elmElement.ports.change.send();
+        }
+
+        attachElm(element, elmModule) {
+            this.elmElement = Elm.MyElement.embed(element, this.flags);
+            this.elmElement.ports.change.subscribe(() => {
+                ShadyCSS.styleElement(this.root);
+                ShadyCSS.styleSubtree(this.root);
+            });
+        }
+    };
+
+    if ( window.customElements ) {
+        // v1
+        customElements.define('my-element', MyElement );
+    } else {
+        // v0
+        alert("WebComponents v0 call of registerElement");
+        document.registerElement('my-element', { prototype: Object.create(MyElement.prototype) });
+    }
+</script>

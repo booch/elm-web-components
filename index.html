@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Web Components Example</title>
+
+        <!-- TODO: Pull these via their Node packages. Make sure to get the `v1` code. -->
+        <script src="https://rawgit.com/webcomponents/webcomponentsjs/v1/webcomponents-lite.js"></script> <!-- 27kb gzipped -->
+
+        <!-- The following are NOT needed in Chrome (57) or Safari (10.1). -->
+        <!-- And they don't seem to be doing anything useful in Firefox (52). -->
+        <!-- <script src="https://rawgit.com/webcomponents/shadydom/master/shadydom.min.js"></script> -->
+        <!-- <script src="https://rawgit.com/webcomponents/shadycss/master/scoping-shim.min.js"></script> -->
+
+        <!-- Choose Shadow DOM polyfill over Shady DOM. Must come before any web component imports. -->
+        <!-- <script>window.Polymer = {dom: "shadow"};</script> -->
+
+        <script src="elm.js"></script> <!-- 38kb gzipped -->
+
+        <link rel="import" href="./my-element.html" />
+
+        <style>
+            /* These should NOT leak into the web components. */
+            /* Unfortunately, they DO leak in Firefox (52), even with the polyfill, with/without `dom: "shadow"`. */
+            section { border: 4px solid orange !important; }
+            button { border: 4px solid orange; }
+        </style>
+
+    </head>
+
+    <body>
+        <p>Before</p>
+        <my-element></my-element>
+        <p>After</p>
+    </body>
+
+
+</html>
